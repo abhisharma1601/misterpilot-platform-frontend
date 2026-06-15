@@ -12,8 +12,13 @@ export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleTermsAccepted, setGoogleTermsAccepted] = useState(false);
 
   async function handleGoogleToken(idToken: string) {
+    if (!googleTermsAccepted) {
+      setError("You must accept the Terms and Conditions to continue.");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
@@ -54,7 +59,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Google Sign-In */}
-          <div className="mb-6">
+          <div className="mb-4">
             {loading ? (
               <div className="flex items-center justify-center gap-2 py-2.5 text-sm text-text-muted">
                 <span className="w-4 h-4 border-2 border-green/40 border-t-green rounded-full animate-spin" />
@@ -64,6 +69,26 @@ export default function RegisterPage() {
               <GoogleButton text="signup_with" onToken={handleGoogleToken} />
             )}
           </div>
+
+          {/* Terms checkbox for Google path */}
+          <label className="flex items-start gap-2.5 cursor-pointer mb-4">
+            <input
+              type="checkbox"
+              checked={googleTermsAccepted}
+              onChange={(e) => setGoogleTermsAccepted(e.target.checked)}
+              className="mt-0.5 w-4 h-4 shrink-0 accent-gold cursor-pointer"
+            />
+            <span className="text-xs text-text-muted leading-relaxed">
+              I agree to the{" "}
+              <Link href="/terms-and-conditions" target="_blank" className="text-gold hover:text-gold-hover transition-colors">
+                Terms and Conditions
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy-policy" target="_blank" className="text-gold hover:text-gold-hover transition-colors">
+                Privacy Policy
+              </Link>
+            </span>
+          </label>
 
           {/* Error */}
           {error && (

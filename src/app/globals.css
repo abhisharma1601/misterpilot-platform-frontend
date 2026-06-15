@@ -61,3 +61,15 @@ body {
   filter: blur(80px);
   pointer-events: none;
 }
+
+/* Legal pages prose */
+.prose h1 { font-size: 1.75rem; font-weight: 700; color: #F0F2F1; margin-bottom: 0.25rem; }
+.prose h2 { font-size: 1.1rem; font-weight: 600; color: #F0F2F1; margin-top: 2rem; margin-bottom: 0.75rem; }
+.prose p { color: #8A9B9C; line-height: 1.75; margin-bottom: 1rem; font-size: 0.9rem; }
+.prose strong { color: #F0F2F1; font-weight: 600; }
+.prose ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+.prose li { color: #8A9B9C; line-height: 1.75; font-size: 0.9rem; margin-bottom: 0.25rem; }
+.prose hr { border: none; border-top: 1px solid #1A3A3B; margin: 2rem 0; }
+.prose blockquote { border-left: 3px solid #1A3A3B; padding-left: 1rem; margin: 1rem 0; color: #5A6B6C; font-size: 0.9rem; }
+.prose a { color: #FED008; text-decoration: underline; }
+.prose a:hover { color: #E5BB00; }

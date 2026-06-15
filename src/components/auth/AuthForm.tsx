@@ -17,6 +17,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
     password: "",
     confirmPassword: "",
   });
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +36,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
       }
       if (form.password.length < 8) {
         setError("Password must be at least 8 characters.");
+        return;
+      }
+      if (!termsAccepted) {
+        setError("You must accept the Terms and Conditions to continue.");
         return;
       }
     }
@@ -119,6 +124,27 @@ export default function AuthForm({ mode }: AuthFormProps) {
             required
           />
         </div>
+      )}
+
+      {mode === "register" && (
+        <label className="flex items-start gap-2.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            className="mt-0.5 w-4 h-4 shrink-0 accent-gold cursor-pointer"
+          />
+          <span className="text-xs text-text-muted leading-relaxed">
+            I agree to the{" "}
+            <Link href="/terms-and-conditions" target="_blank" className="text-gold hover:text-gold-hover transition-colors">
+              Terms and Conditions
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy-policy" target="_blank" className="text-gold hover:text-gold-hover transition-colors">
+              Privacy Policy
+            </Link>
+          </span>
+        </label>
       )}
 
       {error && (
