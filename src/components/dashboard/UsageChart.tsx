@@ -16,7 +16,7 @@ interface UsageChartProps {
 }
 
 export default function UsageChart({ data, metric }: UsageChartProps) {
-  const formattedData = data.map((d) => ({
+  const formattedData = [...data].reverse().map((d) => ({
     ...d,
     date: new Date(d.date).toLocaleDateString("en-US", { weekday: "short" }),
   }));
