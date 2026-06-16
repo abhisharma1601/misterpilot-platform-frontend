@@ -32,13 +32,7 @@ export default function AddFundsButton({ onSuccess }: { onSuccess?: () => void }
   const [loading, setLoading] = useState(false);
 
   const amount = custom ? Number(custom) : selected;
-  const [creditResult, setCreditResult] = useState<{
-    transactionId: number;
-    amount: number;
-    status: string;
-    balanceAfter: number;
-    message: string;
-  } | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cancelled, setCancelled] = useState(false);
 
@@ -56,7 +50,7 @@ export default function AddFundsButton({ onSuccess }: { onSuccess?: () => void }
     }
     setLoading(true);
     setError(null);
-    setCreditResult(null);
+    setPaymentSuccess(false);
     setCancelled(false);
 
     let razorpayOrderId = "";
@@ -109,27 +103,7 @@ export default function AddFundsButton({ onSuccess }: { onSuccess?: () => void }
         rzp.open();
       });
 
-      // Step 4: Credit wallet
-      const creditData = await apiFetch<{
-        transactionId: number;
-        amount: number;
-        status: string;
-        balanceAfter: number;
-        message: string;
-      }>("/wallet/credit", {
-        method: "POST",
-        body: JSON.stringify({
-          orderId: paymentResponse.razorpay_order_id,
-          paymentId: paymentResponse.razorpay_payment_id,
-          signature: paymentResponse.razorpay_signature,
-        }),
-      });
-
-      if (creditData.status !== "SUCCESS") {
-        throw new Error(creditData.message ?? "Payment failed — wallet not credited");
-      }
-
-      setCreditResult(creditData);
+      setPaymentSuccess(true);
       onSuccess?.();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -217,18 +191,12 @@ export default function AddFundsButton({ onSuccess }: { onSuccess?: () => void }
         </div>
       )}
 
-      {creditResult && (
+      {paymentSuccess && (
         <div className="flex items-start gap-2.5 px-3 py-3 bg-green-muted border border-green-500/20 rounded-lg">
           <CircleCheck className="w-4 h-4 text-green shrink-0 mt-0.5" />
           <div className="space-y-0.5">
-            <p className="text-xs font-semibold text-green">{creditResult.message}</p>
-            <p className="text-xs text-text-secondary">
-              ₹{creditResult.amount.toFixed(2)} added · New balance:{" "}
-              <span className="text-text-primary font-medium">
-                ₹{creditResult.balanceAfter.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-              </span>
-            </p>
-            <p className="text-xs text-text-muted">Txn #{creditResult.transactionId}</p>
+            <p className="text-xs font-semibold text-green">Payment Successful</p>
+            <p className="text-xs text-text-secondary">Your wallet will be credited shortly.</p>
           </div>
         </div>
       )}
