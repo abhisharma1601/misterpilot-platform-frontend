@@ -13,7 +13,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MisterPilot — Unified AI API",
+  title: "MisterPilot",
   description: "Access all AI models through a single API endpoint.",
   icons: {
     icon: "/icon.png",

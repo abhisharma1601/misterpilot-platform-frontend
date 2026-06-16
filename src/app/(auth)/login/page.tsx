@@ -61,8 +61,18 @@ export default function LoginPage() {
                 Signing in…
               </div>
             ) : (
-              <GoogleButton text="signin_with" onToken={handleGoogleToken} />
+              <GoogleButton text="continue_with" onToken={handleGoogleToken} />
             )}
+            <p className="text-xs text-text-muted text-center mt-2 leading-relaxed">
+              By clicking the Google button you accept our{" "}
+              <Link href="/terms-and-conditions" target="_blank" className="text-gold hover:text-gold-hover transition-colors">
+                Terms &amp; Conditions
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy-policy" target="_blank" className="text-gold hover:text-gold-hover transition-colors">
+                Privacy Policy
+              </Link>
+            </p>
           </div>
 
           {/* Error */}
