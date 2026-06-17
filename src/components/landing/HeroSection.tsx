@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Wallet, Zap, DollarSign, ArrowUpRight, Activity } from "lucide-react";
+import { ArrowRight, Wallet, Zap, DollarSign, ArrowUpRight, Activity, Puzzle } from "lucide-react";
 
 function MetricMini({
   label,
@@ -31,7 +31,7 @@ function DashboardPreview() {
           <div className="w-2.5 h-2.5 rounded-full bg-green/50" />
         </div>
         <div className="flex-1 mx-4 bg-bg-tertiary rounded-md px-3 py-1 text-xs text-text-muted font-mono text-center">
-          dashboard.misterpilot.online
+          dashboard
         </div>
       </div>
 
@@ -136,15 +136,21 @@ export default function HeroSection() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-green/30 bg-green/10 text-green text-sm font-medium">
               <span>🚀</span>
-              <span>Unified AI Gateway</span>
+              <span>DeepSeek API Gateway</span>
             </div>
 
             {/* Headline */}
             <div className="space-y-2">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary leading-tight tracking-tight">
-                Access Every AI Model{" "}
+                Access DeepSeek Models{" "}
                 <span className="gradient-text">Through One API</span>
               </h1>
+            </div>
+
+            {/* Extension callout */}
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-green/30 bg-green/5 text-sm text-text-secondary">
+              <Puzzle className="w-4 h-4 text-green shrink-0" />
+              <span>We also built a <a href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot" target="_blank" rel="noopener noreferrer" className="text-green font-medium hover:underline">VS Code coding AI agent</a> — use it with your API key</span>
             </div>
 
             {/* Subheadline */}
@@ -164,10 +170,12 @@ export default function HeroSection() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="https://platform.misterpilot.online/docs"
+                href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-text-primary border border-border hover:border-border-light hover:bg-bg-secondary transition-all text-sm"
               >
-                View Documentation
+                Get VS Code Extension
                 <ArrowUpRight className="w-4 h-4" />
               </a>
             </div>

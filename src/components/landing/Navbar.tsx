@@ -59,6 +59,14 @@ export default function Navbar() {
             >
               Documentation
             </a>
+            <a
+              href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-green font-medium hover:text-text-primary transition-colors"
+            >
+              VS Code Extension
+            </a>
           </div>
 
           {/* Right buttons */}
@@ -109,6 +117,14 @@ export default function Navbar() {
             className="block text-sm text-text-secondary hover:text-text-primary py-2 transition-colors"
           >
             Documentation
+          </a>
+          <a
+            href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-sm text-green font-medium py-2 transition-colors"
+          >
+            VS Code Extension
           </a>
           <div className="flex items-center gap-3 pt-2">
             <Link

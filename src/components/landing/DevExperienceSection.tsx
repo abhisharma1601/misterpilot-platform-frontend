@@ -27,7 +27,7 @@ const benefits = [
   {
     icon: <Shield className="w-4 h-4" />,
     title: "Simple Authentication",
-    desc: "One bearer token for all models and providers.",
+    desc: "One bearer token for all DeepSeek models.",
   },
   {
     icon: <Activity className="w-4 h-4" />,

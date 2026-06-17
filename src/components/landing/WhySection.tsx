@@ -43,7 +43,7 @@ export default function WhySection() {
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight">
             One Integration.{" "}
-            <span className="gradient-text">Unlimited AI Possibilities.</span>
+            <span className="gradient-text">Both DeepSeek Models.</span>
           </h2>
           <p className="text-text-secondary max-w-xl mx-auto">
             Everything you need to build AI-powered products, without the

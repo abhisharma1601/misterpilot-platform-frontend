@@ -30,7 +30,8 @@ export default function CTASection() {
 
             <p className="text-lg text-text-secondary max-w-xl mx-auto">
               Create an account, generate an API key, and access powerful AI
-              models in minutes. No credit card required.
+              models in minutes. Or use our VS Code extension for a complete
+              coding AI agent experience.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -42,10 +43,12 @@ export default function CTASection() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="https://platform.misterpilot.online/docs"
+                href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-text-primary border border-border hover:border-border-light hover:bg-bg-tertiary transition-all text-sm"
               >
-                View Documentation
+                Get VS Code Extension
                 <ArrowUpRight className="w-4 h-4" />
               </a>
             </div>

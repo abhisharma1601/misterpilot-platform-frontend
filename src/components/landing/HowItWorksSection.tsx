@@ -15,7 +15,7 @@ const steps = [
     number: "03",
     title: "Generate an API Key",
     description:
-      "Create a secure API key from your dashboard. Manage multiple keys for different projects.",
+      "Create a secure API key from your dashboard. Use it in your own code or with our VS Code extension.",
   },
   {
     number: "04",

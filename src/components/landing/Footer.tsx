@@ -8,20 +8,20 @@ const columns = [
       { label: "Features", href: "#features" },
       { label: "Pricing", href: "#pricing" },
       { label: "Documentation", href: "https://platform.misterpilot.online/docs" },
+      { label: "VS Code Extension", href: "https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot" },
     ],
   },
   {
     heading: "Company",
     links: [
-      { label: "About", href: "#" },
       { label: "Contact", href: "mailto:support@misterpilot.online" },
     ],
   },
   {
     heading: "Legal",
     links: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Service", href: "#" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-and-conditions" },
     ],
   },
 ];
@@ -46,7 +46,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-xs text-text-muted leading-relaxed max-w-[180px]">
-              The unified AI gateway for developers. One API. Every model.
+              DeepSeek API gateway for developers. One key. Full cost control.
             </p>
           </div>
 

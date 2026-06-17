@@ -7,7 +7,7 @@ const features = [
   "Recharge when needed",
   "Usage-based billing",
   "Full cost visibility",
-  "All AI models included",
+  "DeepSeek V3 & R1 included",
   "API key management",
   "Real-time analytics dashboard",
 ];
