@@ -7,7 +7,7 @@ const columns = [
     links: [
       { label: "Features", href: "#features" },
       { label: "Pricing", href: "#pricing" },
-      { label: "Documentation", href: "https://platform.misterpilot.online/docs" },
+      { label: "Documentation", href: "https://misterpilot.online" },
       { label: "VS Code Extension", href: "https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot" },
     ],
   },

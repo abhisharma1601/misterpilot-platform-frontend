@@ -54,7 +54,9 @@ export default function Navbar() {
               Pricing
             </Link>
             <a
-              href="https://platform.misterpilot.online/docs"
+              href="https://misterpilot.online"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-text-secondary hover:text-text-primary transition-colors"
             >
               Documentation
@@ -113,7 +115,9 @@ export default function Navbar() {
             Pricing
           </Link>
           <a
-            href="https://platform.misterpilot.online/docs"
+            href="https://misterpilot.online"
+            target="_blank"
+            rel="noopener noreferrer"
             className="block text-sm text-text-secondary hover:text-text-primary py-2 transition-colors"
           >
             Documentation

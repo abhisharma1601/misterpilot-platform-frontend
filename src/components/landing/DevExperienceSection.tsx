@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Terminal, Copy, Check, Zap, Shield, Activity, Globe } from "lucide-react";
 
-const CODE = `curl https://platform.misterpilot.online/api/v1/chat/completions \\
+const CODE = `curl https://engine.misterpilot.online/api/v1/chat/completions \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -85,7 +85,7 @@ export default function DevExperienceSection() {
                 <code>
                   <span className="text-green">curl</span>{" "}
                   <span className="text-emerald-400">
-                    https://platform.misterpilot.online/api/v1/chat/completions
+                    https://engine.misterpilot.online/api/v1/chat/completions
                   </span>
                   {" \\\n  "}
                   <span className="text-text-secondary">-H</span>{" "}
