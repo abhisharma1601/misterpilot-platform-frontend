@@ -94,3 +94,70 @@ export function clearSession() {
   localStorage.removeItem("mp_user");
   document.cookie = "mp_jwt=; path=/; max-age=0";
 }
+
+// ── Admin API ────────────────────────────────────────────────────────────────
+// Admin endpoints require the same JWT but with "Bearer".
+
+export async function adminApiFetch<T = unknown>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const jwt =
+    typeof window !== "undefined" ? localStorage.getItem("mp_jwt") : null;
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+      ...options.headers,
+    },
+  }).catch(() => {
+    throw new Error("Unable to reach the server. Please check your connection.");
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res));
+  }
+  const text = await res.text();
+  return text ? (JSON.parse(text) as T) : ({} as T);
+}
+
+// ── Admin types ──────────────────────────────────────────────────────────────
+
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  balance: number;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface AdminTransaction {
+  id: number;
+  amount: number;
+  status: "SUCCESS" | "PENDING" | "FAILED";
+  userId: number;
+  orderId: string;
+  createdAt: string;
+}
+
+export interface PaginatedTransactions {
+  content: AdminTransaction[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: { unsorted: boolean; sorted: boolean; empty: boolean };
+    offset: number;
+    unpaged: boolean;
+    paged: boolean;
+  };
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: { unsorted: boolean; sorted: boolean; empty: boolean };
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
+}

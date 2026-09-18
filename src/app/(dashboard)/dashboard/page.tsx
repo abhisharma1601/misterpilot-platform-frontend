@@ -25,6 +25,9 @@ interface StatsResponse {
     costUsd: number;
     costInr: number;
     createdAt: string;
+    status?: "success" | "pending" | "failed";
+    type?: "credit" | "debit";
+    userId?: number;
   }[];
 }
 
