@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import TopNav from "@/components/layout/TopNav";
-import { apiFetch } from "@/lib/api";
-import { User, Mail, Calendar, Shield, Trash2, Loader2 } from "lucide-react";
+import { apiFetch, getJwt, getStoredUser } from "@/lib/api";
+import { User, Mail, Calendar, Shield, Trash2, Loader2, MailWarning } from "lucide-react";
 
 interface Profile {
   email: string;
@@ -15,8 +15,11 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [resetState, setResetState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [verifyState, setVerifyState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [jwt, setJwt] = useState<string | null>(null);
 
   useEffect(() => {
+    setJwt(getJwt());
     apiFetch<Profile>("/profile/me")
       .then(setProfile)
       .catch(() => null)
@@ -25,17 +28,40 @@ export default function ProfilePage() {
 
   const initial = profile?.name?.charAt(0)?.toUpperCase() ?? "?";
 
+  // One check: if mp_jwt is null (or the literal string "null"), show the resend button.
+  const showResend = jwt === null || jwt === "null";
+
+  // Email for the resend call: profile response, else the user persisted at login.
+  const email = profile?.email ?? getStoredUser()?.email ?? "";
+
   async function handleSendResetLink() {
-    if (!profile?.email) return;
+    if (!email) return;
     setResetState("sending");
     try {
       await apiFetch("/auth/forgot-password", {
         method: "POST",
-        body: JSON.stringify({ email: profile.email }),
+        body: JSON.stringify({ email }),
       });
       setResetState("sent");
     } catch {
       setResetState("error");
+    }
+  }
+
+  async function handleResendVerification() {
+    if (!email) {
+      setVerifyState("error");
+      return;
+    }
+    setVerifyState("sending");
+    try {
+      await apiFetch("/auth/resend-verification", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      setVerifyState("sent");
+    } catch {
+      setVerifyState("error");
     }
   }
 
@@ -51,6 +77,34 @@ export default function ProfilePage() {
     <>
       <TopNav title="Profile" />
       <div className="p-8 space-y-8 max-w-2xl">
+
+        {/* Resend verification — shown when mp_jwt is null */}
+        {showResend && (
+          <div className="bg-gold/5 border border-gold/30 rounded-xl p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <MailWarning className="w-5 h-5 text-gold mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-text-primary">Your email isn&apos;t verified</p>
+                  <p className="text-xs text-text-secondary mt-1">
+                    {verifyState === "sent"
+                      ? `Verification link sent to ${email}. Check your inbox.`
+                      : verifyState === "error"
+                      ? "Couldn&apos;t send the link. Please try again."
+                      : "Send yourself a fresh verification link."}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleResendVerification}
+                disabled={verifyState === "sending" || verifyState === "sent" || !email}
+                className="shrink-0 px-3.5 py-2 rounded-lg bg-gold hover:bg-gold-hover disabled:opacity-50 disabled:cursor-not-allowed text-[#071B1C] text-sm font-bold transition-colors"
+              >
+                {verifyState === "sending" ? "Sending…" : verifyState === "sent" ? "Sent!" : "Resend Link"}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Account Info */}
         <div className="bg-bg-secondary border border-border rounded-xl p-6">

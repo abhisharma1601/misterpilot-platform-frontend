@@ -89,6 +89,22 @@ export function getJwt(): string | null {
   return localStorage.getItem("mp_jwt");
 }
 
+export interface StoredUser {
+  userId: number;
+  name: string;
+  email: string;
+}
+
+/** Reads the user persisted by saveSession() — used as a fallback when /profile/me is unavailable. */
+export function getStoredUser(): StoredUser | null {
+  try {
+    const raw = localStorage.getItem("mp_user");
+    return raw ? (JSON.parse(raw) as StoredUser) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function clearSession() {
   localStorage.removeItem("mp_jwt");
   localStorage.removeItem("mp_user");
