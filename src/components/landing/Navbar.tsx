@@ -3,7 +3,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
+import { DOCS_URL, MARKETPLACE_URL } from "./shared";
+
+const links = [
+  { label: "Auto", href: "#auto" },
+  { label: "Models", href: "#models" },
+  { label: "Features", href: "#features" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -18,7 +27,7 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+        scrolled || menuOpen
           ? "bg-bg-primary/90 backdrop-blur-md border-b border-border"
           : "bg-transparent"
       }`}
@@ -40,56 +49,49 @@ export default function Navbar() {
           </Link>
 
           {/* Center nav */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link
-              href="#features"
-              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
-            >
-              Features
-            </Link>
-            <Link
-              href="#pricing"
-              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
-            >
-              Pricing
-            </Link>
+          <div className="hidden md:flex items-center gap-7">
+            {links.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
             <a
-              href="https://misterpilot.online"
+              href={DOCS_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-text-secondary hover:text-text-primary transition-colors"
             >
-              Documentation
-            </a>
-            <a
-              href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-green font-medium hover:text-text-primary transition-colors"
-            >
-              VS Code Extension
+              Docs
             </a>
           </div>
 
           {/* Right buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
             <Link
               href="/login"
               className="text-sm text-text-secondary hover:text-text-primary transition-colors px-4 py-2"
             >
               Login
             </Link>
-            <Link
-              href="/register"
-              className="text-sm font-semibold px-4 py-2 rounded-lg bg-green hover:bg-green-hover text-white transition-all shadow-lg shadow-green/20"
+            <a
+              href={MARKETPLACE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-green hover:bg-green-hover text-white transition-all shadow-lg shadow-green/20"
             >
-              Get Started
-            </Link>
+              Install for VS Code
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
           </div>
 
           {/* Mobile menu toggle */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
             className="md:hidden p-2 text-text-secondary hover:text-text-primary transition-colors"
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -99,38 +101,26 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-bg-primary/95 backdrop-blur-md border-b border-border px-4 py-4 space-y-3">
-          <Link
-            href="#features"
-            onClick={() => setMenuOpen(false)}
-            className="block text-sm text-text-secondary hover:text-text-primary py-2 transition-colors"
-          >
-            Features
-          </Link>
-          <Link
-            href="#pricing"
-            onClick={() => setMenuOpen(false)}
-            className="block text-sm text-text-secondary hover:text-text-primary py-2 transition-colors"
-          >
-            Pricing
-          </Link>
+        <div className="md:hidden bg-bg-primary/95 backdrop-blur-md border-b border-border px-4 py-4 space-y-1">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              onClick={() => setMenuOpen(false)}
+              className="block text-sm text-text-secondary hover:text-text-primary py-2 transition-colors"
+            >
+              {l.label}
+            </Link>
+          ))}
           <a
-            href="https://misterpilot.online"
+            href={DOCS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="block text-sm text-text-secondary hover:text-text-primary py-2 transition-colors"
           >
-            Documentation
+            Docs
           </a>
-          <a
-            href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block text-sm text-green font-medium py-2 transition-colors"
-          >
-            VS Code Extension
-          </a>
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-3 pt-3">
             <Link
               href="/login"
               className="text-sm text-text-secondary hover:text-text-primary transition-colors"
@@ -139,10 +129,18 @@ export default function Navbar() {
             </Link>
             <Link
               href="/register"
-              className="text-sm font-semibold px-4 py-2 rounded-lg bg-green hover:bg-green-hover text-white"
+              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
             >
-              Get Started
+              Create account
             </Link>
+            <a
+              href={MARKETPLACE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto text-sm font-semibold px-4 py-2 rounded-lg bg-green hover:bg-green-hover text-white"
+            >
+              Install
+            </a>
           </div>
         </div>
       )}
