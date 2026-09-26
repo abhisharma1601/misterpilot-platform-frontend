@@ -1,93 +1,108 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Wallet, Zap, DollarSign, ArrowUpRight, Activity, Puzzle } from "lucide-react";
+import { ArrowUpRight, Check, Sparkles } from "lucide-react";
+import { MARKETPLACE_URL, TierChip, type Tier } from "./shared";
+import { MIN_RECHARGE } from "@/lib/wallet";
 
-function MetricMini({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent: string;
-}) {
+const ROUTES: { prompt: string; tier: Tier; reason: string }[] = [
+  { prompt: "Why is this regex not matching?", tier: "fast", reason: "Simple question" },
+  { prompt: "Add Google OAuth to the Express app", tier: "reasoning", reason: "Multi-file feature" },
+  { prompt: "Split this monolith into services", tier: "frontier", reason: "Architecture task" },
+];
+
+const trust = [
+  "No subscription",
+  "Bring your own keys",
+  "Up to 1M-token context",
+  "Copilot Chat compatible",
+];
+
+function RoutingDemo() {
+  // step: how many rows have been routed; ROUTES.length + 1 holds the final frame briefly
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setStep(ROUTES.length);
+      return;
+    }
+    const id = setInterval(() => {
+      setStep((s) => (s >= ROUTES.length + 1 ? 0 : s + 1));
+    }, 1600);
+    return () => clearInterval(id);
+  }, []);
+
   return (
-    <div className="bg-bg-tertiary border border-border rounded-lg p-3">
-      <p className="text-xs text-text-muted mb-1">{label}</p>
-      <p className={`text-sm font-bold ${accent}`}>{value}</p>
-    </div>
-  );
-}
+    <div className="relative rounded-2xl border border-border bg-bg-secondary/80 backdrop-blur shadow-2xl overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green/60 to-transparent" />
 
-function DashboardPreview() {
-  const bars = [40, 65, 50, 80, 60, 90, 72, 85, 55, 70, 88, 76];
-
-  return (
-    <div className="relative rounded-2xl border border-border/60 overflow-hidden bg-bg-secondary shadow-2xl shadow-black/50">
-      {/* Browser chrome */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-bg-primary">
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-error/50" />
-          <div className="w-2.5 h-2.5 rounded-full bg-warning/50" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green/50" />
+      {/* Window chrome */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-error/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-warning/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-green/70" />
         </div>
-        <div className="flex-1 mx-4 bg-bg-tertiary rounded-md px-3 py-1 text-xs text-text-muted font-mono text-center">
-          dashboard
-        </div>
+        <span className="text-xs text-text-muted font-mono">MisterPilot Auto</span>
+        <span className="flex items-center gap-1.5 text-xs text-green font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+          routing
+        </span>
       </div>
 
-      {/* Dashboard body */}
-      <div className="p-4 space-y-3">
-        {/* Metric cards */}
-        <div className="grid grid-cols-2 gap-2">
-          <MetricMini label="Wallet Balance" value="₹1,250.00" accent="text-gold" />
-          <MetricMini label="API Requests" value="12,847" accent="text-green" />
-          <MetricMini label="Tokens Used" value="2.4M" accent="text-green" />
-          <MetricMini label="Amount Spent" value="₹124.50" accent="text-gold" />
-        </div>
-
-        {/* Mini chart */}
-        <div className="bg-bg-primary rounded-xl border border-border p-3">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-text-muted">API Requests — Last 12 Days</span>
-            <Activity className="w-3 h-3 text-green" />
-          </div>
-          <div className="flex items-end gap-1 h-14">
-            {bars.map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-sm"
-                style={{
-                  height: `${h}%`,
-                  background: `linear-gradient(to top, #35AA35, #4ade80)`,
-                  opacity: 0.7 + i * 0.025,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Recent activity */}
-        <div className="bg-bg-primary rounded-xl border border-border p-3">
-          <p className="text-xs text-text-muted mb-2">Recent Activity</p>
-          {[
-            { model: "deepseek-chat", tokens: "1,280", cost: "₹0.45" },
-            { model: "deepseek-reasoner", tokens: "842", cost: "₹0.12" },
-            { model: "deepseek-chat", tokens: "2,100", cost: "₹0.08" },
-          ].map((r, i) => (
+      <div className="p-4 sm:p-5 space-y-3">
+        {ROUTES.map((r, i) => {
+          const routed = step > i;
+          const active = step === i;
+          return (
             <div
-              key={i}
-              className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0"
+              key={r.prompt}
+              className={`rounded-xl border p-3 sm:p-4 transition-all duration-500 ${
+                routed
+                  ? "border-border-light bg-bg-tertiary"
+                  : active
+                    ? "border-green/40 bg-bg-tertiary/60"
+                    : "border-border bg-bg-primary/40 opacity-50"
+              }`}
             >
-              <span className="text-xs font-mono text-text-secondary truncate max-w-[120px]">
-                {r.model}
-              </span>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-text-muted">{r.tokens} tok</span>
-                <span className="text-xs text-green font-medium">{r.cost}</span>
+              <p className="font-mono text-xs sm:text-sm text-text-primary">
+                <span className="text-green mr-2">›</span>
+                {r.prompt}
+              </p>
+              <div className="mt-3 flex items-center gap-2 min-h-[28px]">
+                <div className="relative h-px flex-1 bg-border overflow-hidden">
+                  <div
+                    className={`absolute inset-y-0 left-0 bg-gradient-to-r from-green/20 to-green transition-all duration-700 ${
+                      routed ? "w-full" : active ? "w-1/2" : "w-0"
+                    }`}
+                  />
+                </div>
+                <div
+                  className={`transition-all duration-500 ${
+                    routed ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2"
+                  }`}
+                >
+                  <TierChip tier={r.tier} />
+                </div>
               </div>
+              <p
+                className={`mt-1.5 text-[11px] text-text-muted transition-opacity duration-500 ${
+                  routed ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {r.reason}
+              </p>
             </div>
-          ))}
-        </div>
+          );
+        })}
+      </div>
+
+      <div className="px-5 py-3 border-t border-border flex items-center justify-between text-xs">
+        <span className="text-text-muted">Model picked for each request</span>
+        <span className="font-mono text-text-secondary">OpenAI · Claude · DeepSeek</span>
       </div>
     </div>
   );
@@ -95,7 +110,7 @@ function DashboardPreview() {
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
+    <section className="relative flex items-center overflow-hidden pt-28 pb-20 lg:min-h-screen lg:pt-16 lg:pb-0">
       {/* Background glows */}
       <div
         className="hero-glow animate-glow-pulse"
@@ -112,97 +127,80 @@ export default function HeroSection() {
         style={{
           width: 500,
           height: 500,
-          top: 50,
-          right: -100,
-          background: "radial-gradient(circle, rgba(53,170,53,0.12) 0%, transparent 70%)",
+          top: 80,
+          right: -120,
+          background: "radial-gradient(circle, rgba(254,208,8,0.08) 0%, transparent 70%)",
           animationDelay: "2s",
         }}
       />
+      {/* Grid backdrop */}
       <div
-        className="hero-glow"
+        className="absolute inset-0 pointer-events-none opacity-[0.07]"
         style={{
-          width: 400,
-          height: 400,
-          bottom: -50,
-          left: "40%",
-          background: "radial-gradient(circle, rgba(254,208,8,0.08) 0%, transparent 70%)",
+          backgroundImage:
+            "linear-gradient(#35AA35 1px, transparent 1px), linear-gradient(90deg, #35AA35 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+          maskImage: "radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent)",
+          WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent)",
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text */}
-          <div className="space-y-8">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-green/30 bg-green/10 text-green text-sm font-medium">
-              <span>🚀</span>
-              <span>DeepSeek API Gateway</span>
-            </div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+          {/* Copy */}
+          <div className="space-y-7">
+            <a
+              href="#auto"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gold/30 bg-gold-muted text-gold text-xs sm:text-sm font-medium hover:border-gold/60 transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              New — MisterPilot Auto
+              <span className="text-gold/70">→</span>
+            </a>
 
-            {/* Headline */}
-            <div className="space-y-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary leading-tight tracking-tight">
-                Access DeepSeek Models{" "}
-                <span className="gradient-text">Through One API</span>
-              </h1>
-            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-text-primary">
+              Stop Choosing Models.
+              <br />
+              <span className="gradient-text">Start Building.</span>
+            </h1>
 
-            {/* Extension callout */}
-            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-green/30 bg-green/5 text-sm text-text-secondary">
-              <Puzzle className="w-4 h-4 text-green shrink-0" />
-              <span>We also built a <a href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot" target="_blank" rel="noopener noreferrer" className="text-green font-medium hover:underline">VS Code coding AI agent</a> — use it with your API key</span>
-            </div>
-
-            {/* Subheadline */}
-            <p className="text-lg text-text-secondary leading-relaxed max-w-lg">
-              Connect to DeepSeek models through a single API key. Pay only for
-              what you use, track every token, and switch models without
-              changing your code.
+            <p className="text-lg text-text-secondary leading-relaxed max-w-xl">
+              MisterPilot is the AI coding assistant for VS Code that picks the
+              right model for every request — GPT, Claude, or DeepSeek —
+              automatically. Fast answers on simple tasks, deep reasoning on
+              hard ones, and you only pay for what you use.
             </p>
 
-            {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/register"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-green hover:bg-green-hover transition-all shadow-lg shadow-green/20 text-sm"
-              >
-                Get Started
-                <ArrowRight className="w-4 h-4" />
-              </Link>
               <a
-                href="https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot"
+                href={MARKETPLACE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-text-primary border border-border hover:border-border-light hover:bg-bg-secondary transition-all text-sm"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white bg-green hover:bg-green-hover transition-all shadow-lg shadow-green/25 text-sm"
               >
-                Get VS Code Extension
+                Install for VS Code
                 <ArrowUpRight className="w-4 h-4" />
               </a>
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-text-primary border border-border hover:border-border-light hover:bg-bg-tertiary transition-all text-sm"
+              >
+                Get started from ₹{MIN_RECHARGE}
+              </Link>
             </div>
 
-            {/* Trust signals */}
-            <div className="flex items-center gap-6 pt-2">
-              {[
-                { icon: <Wallet className="w-4 h-4" />, text: "Pay-as-you-go" },
-                { icon: <Zap className="w-4 h-4" />, text: "No lock-in" },
-                { icon: <DollarSign className="w-4 h-4" />, text: "Full cost visibility" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-text-muted text-xs">
-                  <span className="text-green">{item.icon}</span>
-                  {item.text}
-                </div>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2 max-w-md">
+              {trust.map((t) => (
+                <li key={t} className="flex items-center gap-2 text-sm text-text-secondary">
+                  <Check className="w-4 h-4 text-green shrink-0" />
+                  {t}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
-          {/* Right: Dashboard preview */}
-          <div className="relative animate-float">
-            <div
-              className="absolute inset-0 rounded-2xl blur-2xl opacity-15"
-              style={{ background: "linear-gradient(135deg, #35AA35, #4ade80)" }}
-            />
-            <DashboardPreview />
-          </div>
+          {/* Visual */}
+          <RoutingDemo />
         </div>
       </div>
     </section>
