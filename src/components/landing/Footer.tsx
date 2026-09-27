@@ -5,8 +5,11 @@ const columns = [
   {
     heading: "Product",
     links: [
+      { label: "MisterPilot Auto", href: "#auto" },
+      { label: "Models", href: "#models" },
       { label: "Features", href: "#features" },
       { label: "Pricing", href: "#pricing" },
+      { label: "FAQ", href: "#faq" },
       { label: "Documentation", href: "https://misterpilot.online" },
       { label: "VS Code Extension", href: "https://marketplace.visualstudio.com/items?itemName=MisterPilot.misterpilot" },
     ],
@@ -46,7 +49,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-xs text-text-muted leading-relaxed max-w-[180px]">
-              DeepSeek API gateway for developers. One key. Full cost control.
+              The AI coding assistant that picks the right model for every task.
             </p>
           </div>
 

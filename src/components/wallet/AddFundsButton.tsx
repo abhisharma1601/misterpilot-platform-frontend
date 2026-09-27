@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Wallet, CircleCheck, CircleX, CircleAlert } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { MIN_RECHARGE } from "@/lib/wallet";
 
-const PRESET_AMOUNTS = [50, 100, 199, 499];
+const PRESET_AMOUNTS = [99, 199, 499, 999];
 
 declare global {
   interface Window {
@@ -44,8 +45,8 @@ export default function AddFundsButton({ onSuccess }: { onSuccess?: () => void }
   }
 
   async function handleAddFunds() {
-    if (!amount || amount < 1) {
-      setError("Enter a valid amount");
+    if (!amount || amount < MIN_RECHARGE) {
+      setError(`Minimum recharge amount is ₹${MIN_RECHARGE}`);
       return;
     }
     setLoading(true);
@@ -151,8 +152,8 @@ export default function AddFundsButton({ onSuccess }: { onSuccess?: () => void }
         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted font-medium">₹</span>
         <input
           type="number"
-          min={1}
-          placeholder="0"
+          min={MIN_RECHARGE}
+          placeholder={`${MIN_RECHARGE}`}
           value={custom}
           onChange={(e) => setCustom(e.target.value)}
           disabled={loading}
@@ -161,10 +162,13 @@ export default function AddFundsButton({ onSuccess }: { onSuccess?: () => void }
           }`}
         />
       </div>
+      <p className={`-mt-3 text-xs ${custom && Number(custom) < MIN_RECHARGE ? "text-warning" : "text-text-muted"}`}>
+        Minimum recharge ₹{MIN_RECHARGE}
+      </p>
 
       <button
         onClick={handleAddFunds}
-        disabled={loading || !amount || amount < 1}
+        disabled={loading || !amount || amount < MIN_RECHARGE}
         className="w-full inline-flex items-center justify-center gap-2 py-2.5 bg-gold hover:bg-gold-hover disabled:opacity-50 disabled:cursor-not-allowed text-[#071B1C] text-sm font-semibold rounded-lg transition-colors"
       >
         <Wallet className="w-4 h-4" />
