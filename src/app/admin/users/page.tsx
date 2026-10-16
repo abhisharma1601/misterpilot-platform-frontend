@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Wallet,
   Tag,
+  Landmark,
   LogOut,
   Search,
   IndianRupee,
@@ -181,6 +182,7 @@ export default function AdminUsersPage() {
               icon={<Wallet className="w-4 h-4" />}
               label="CashFlow"
             />
+            <NavLink href="/admin/funding" icon={<Landmark className="w-4 h-4" />} label="Funding" />
             <NavLink
               href="/admin/offers"
               icon={<Tag className="w-4 h-4" />}

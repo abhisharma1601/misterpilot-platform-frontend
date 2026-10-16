@@ -7,6 +7,7 @@ import {
   UserRound,
   Wallet,
   Tag,
+  Landmark,
   LogOut,
   Percent,
   IndianRupee,
@@ -24,6 +25,7 @@ import {
   offers as initialOffers,
   type DummyOffer,
 } from "@/lib/admin/dummyData";
+import { clearSession } from "@/lib/api";
 
 // ---- Helpers ----
 
@@ -114,6 +116,11 @@ export default function AdminOffersPage() {
   const [codeError, setCodeError] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  function handleLogout() {
+    clearSession();
+    window.location.href = "/admin/login";
+  }
 
   const existingCodes = new Set(offers.map((o) => o.code.toUpperCase()));
 
@@ -215,9 +222,13 @@ export default function AdminOffersPage() {
             <NavLink href="/admin/dashboard" icon={<LayoutDashboard className="w-4 h-4" />} label="Dashboard" />
             <NavLink href="/admin/users" icon={<UserRound className="w-4 h-4" />} label="Users" />
             <NavLink href="/admin/cashflow" icon={<Wallet className="w-4 h-4" />} label="CashFlow" />
+            <NavLink href="/admin/funding" icon={<Landmark className="w-4 h-4" />} label="Funding" />
             <NavLink href="/admin/offers" icon={<Tag className="w-4 h-4" />} label="Offers" active />
           </div>
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm text-text-muted hover:text-error hover:bg-error/10 rounded-lg transition-colors">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-text-muted hover:text-error hover:bg-error/10 rounded-lg transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             <span className="hidden sm:inline">Logout</span>
           </button>

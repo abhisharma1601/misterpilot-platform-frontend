@@ -130,6 +130,14 @@ export async function adminApiFetch<T = unknown>(
   }).catch(() => {
     throw new Error("Unable to reach the server. Please check your connection.");
   });
+  // Expired or invalid token — drop the session and send the admin back to login
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      clearSession();
+      window.location.href = "/admin/login";
+    }
+    throw new Error("Your session has expired. Please log in again.");
+  }
   if (!res.ok) {
     throw new Error(await extractErrorMessage(res));
   }
@@ -152,9 +160,14 @@ export interface AdminTransaction {
   id: number;
   amount: number;
   status: "SUCCESS" | "PENDING" | "FAILED";
-  userId: number;
+  /** null when the user's wallet has been deleted */
+  userId: number | null;
   orderId: string;
   createdAt: string;
+}
+
+export interface PaginatedUsers extends Omit<PaginatedTransactions, "content"> {
+  content: AdminUser[];
 }
 
 export interface PaginatedTransactions {
@@ -176,4 +189,77 @@ export interface PaginatedTransactions {
   numberOfElements: number;
   first: boolean;
   empty: boolean;
+}
+
+// ── Provider funding ─────────────────────────────────────────────────────────
+
+export type FundingProvider = "OPENAI" | "DEEPSEEK" | "ANTHROPIC" | "OTHER";
+
+export interface ProviderFundingRow {
+  provider: FundingProvider;
+  chargedInr: number;
+  providerCostInr: number;
+  usageSharePercent: number;
+  requiredBalanceInr: number;
+  strictRequiredInr: number;
+  recommendedInr: number;
+}
+
+export interface ProviderFundingResponse {
+  totalWalletBalanceInr: number;
+  markup: number;
+  fxBuffer: number;
+  safetyBuffer: number;
+  inFlightBufferInr: number;
+  totalRequiredProviderBalanceInr: number;
+  totalStrictRequiredInr: number;
+  totalRecommendedInr: number;
+  windowDays: number | null;
+  windowStart: string | null;
+  unallocatedInr: number;
+  providers: ProviderFundingRow[];
+}
+
+// ── Cashflow ─────────────────────────────────────────────────────────────────
+
+export interface CashflowPeriod {
+  periodStart: string;
+  periodEnd: string;
+  revenueInr: number;
+  transactionCount: number;
+  averageTransactionInr: number;
+  previousPeriodStart: string;
+  previousPeriodEnd: string;
+  previousRevenueInr: number;
+  /** null when the previous period had no revenue */
+  growthPercent: number | null;
+}
+
+export interface CashflowSummary {
+  totalRevenueInr: number;
+  totalTransactionCount: number;
+  generatedAt: string;
+  week: CashflowPeriod;
+  month: CashflowPeriod;
+  quarter: CashflowPeriod;
+}
+
+// ── Engine models (public, OpenAI-compatible) ────────────────────────────────
+
+const ENGINE_MODELS_URL = "https://engine.misterpilot.online/v1/models";
+
+export interface EngineModel {
+  id: string;
+  object: "model";
+  created: number;
+  owned_by: string;
+}
+
+export async function fetchEngineModels(): Promise<EngineModel[]> {
+  const res = await fetch(ENGINE_MODELS_URL).catch(() => {
+    throw new Error("Unable to reach the model engine.");
+  });
+  if (!res.ok) throw new Error("Failed to load models.");
+  const body: { data?: EngineModel[] } = await res.json();
+  return body.data ?? [];
 }
