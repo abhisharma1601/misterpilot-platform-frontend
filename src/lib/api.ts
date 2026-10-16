@@ -110,3 +110,156 @@ export function clearSession() {
   localStorage.removeItem("mp_user");
   document.cookie = "mp_jwt=; path=/; max-age=0";
 }
+
+// ── Admin API ────────────────────────────────────────────────────────────────
+// Admin endpoints require the same JWT but with "Bearer".
+
+export async function adminApiFetch<T = unknown>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const jwt =
+    typeof window !== "undefined" ? localStorage.getItem("mp_jwt") : null;
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+      ...options.headers,
+    },
+  }).catch(() => {
+    throw new Error("Unable to reach the server. Please check your connection.");
+  });
+  // Expired or invalid token — drop the session and send the admin back to login
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      clearSession();
+      window.location.href = "/admin/login";
+    }
+    throw new Error("Your session has expired. Please log in again.");
+  }
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res));
+  }
+  const text = await res.text();
+  return text ? (JSON.parse(text) as T) : ({} as T);
+}
+
+// ── Admin types ──────────────────────────────────────────────────────────────
+
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  balance: number;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface AdminTransaction {
+  id: number;
+  amount: number;
+  status: "SUCCESS" | "PENDING" | "FAILED";
+  /** null when the user's wallet has been deleted */
+  userId: number | null;
+  orderId: string;
+  createdAt: string;
+}
+
+export interface PaginatedUsers extends Omit<PaginatedTransactions, "content"> {
+  content: AdminUser[];
+}
+
+export interface PaginatedTransactions {
+  content: AdminTransaction[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: { unsorted: boolean; sorted: boolean; empty: boolean };
+    offset: number;
+    unpaged: boolean;
+    paged: boolean;
+  };
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: { unsorted: boolean; sorted: boolean; empty: boolean };
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
+}
+
+// ── Provider funding ─────────────────────────────────────────────────────────
+
+export type FundingProvider = "OPENAI" | "DEEPSEEK" | "ANTHROPIC" | "OTHER";
+
+export interface ProviderFundingRow {
+  provider: FundingProvider;
+  chargedInr: number;
+  providerCostInr: number;
+  usageSharePercent: number;
+  requiredBalanceInr: number;
+  strictRequiredInr: number;
+  recommendedInr: number;
+}
+
+export interface ProviderFundingResponse {
+  totalWalletBalanceInr: number;
+  markup: number;
+  fxBuffer: number;
+  safetyBuffer: number;
+  inFlightBufferInr: number;
+  totalRequiredProviderBalanceInr: number;
+  totalStrictRequiredInr: number;
+  totalRecommendedInr: number;
+  windowDays: number | null;
+  windowStart: string | null;
+  unallocatedInr: number;
+  providers: ProviderFundingRow[];
+}
+
+// ── Cashflow ─────────────────────────────────────────────────────────────────
+
+export interface CashflowPeriod {
+  periodStart: string;
+  periodEnd: string;
+  revenueInr: number;
+  transactionCount: number;
+  averageTransactionInr: number;
+  previousPeriodStart: string;
+  previousPeriodEnd: string;
+  previousRevenueInr: number;
+  /** null when the previous period had no revenue */
+  growthPercent: number | null;
+}
+
+export interface CashflowSummary {
+  totalRevenueInr: number;
+  totalTransactionCount: number;
+  generatedAt: string;
+  week: CashflowPeriod;
+  month: CashflowPeriod;
+  quarter: CashflowPeriod;
+}
+
+// ── Engine models (public, OpenAI-compatible) ────────────────────────────────
+
+const ENGINE_MODELS_URL = "https://engine.misterpilot.online/v1/models";
+
+export interface EngineModel {
+  id: string;
+  object: "model";
+  created: number;
+  owned_by: string;
+}
+
+export async function fetchEngineModels(): Promise<EngineModel[]> {
+  const res = await fetch(ENGINE_MODELS_URL).catch(() => {
+    throw new Error("Unable to reach the model engine.");
+  });
+  if (!res.ok) throw new Error("Failed to load models.");
+  const body: { data?: EngineModel[] } = await res.json();
+  return body.data ?? [];
+}
