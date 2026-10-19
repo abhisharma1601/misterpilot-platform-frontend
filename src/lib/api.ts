@@ -1,3 +1,5 @@
+import { isAdminJwt, isJwtUsable } from "@/lib/jwt";
+
 // All /api/backend/* requests are proxied to http://localhost:8080/api/v1/* by next.config.mjs
 const API_BASE = "/api/backend";
 
@@ -89,6 +91,16 @@ export function getJwt(): string | null {
   return localStorage.getItem("mp_jwt");
 }
 
+/** True when a well-formed, unexpired JWT is stored. */
+export function hasValidSession(): boolean {
+  return isJwtUsable(getJwt());
+}
+
+/** True when the stored JWT belongs to an admin. */
+export function hasAdminRole(): boolean {
+  return isAdminJwt(getJwt());
+}
+
 export interface StoredUser {
   userId: number;
   name: string;
@@ -137,6 +149,13 @@ export async function adminApiFetch<T = unknown>(
       window.location.href = "/admin/login";
     }
     throw new Error("Your session has expired. Please log in again.");
+  }
+  // Authenticated but not an admin — send them to the regular user login
+  if (res.status === 403) {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+    throw new Error("You don't have permission to do that.");
   }
   if (!res.ok) {
     throw new Error(await extractErrorMessage(res));

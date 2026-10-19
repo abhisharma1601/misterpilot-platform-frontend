@@ -2,19 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getJwt } from "@/lib/api";
+import { clearSession, hasAdminRole, hasValidSession } from "@/lib/api";
 
-export default function AuthGuard({ children }: { children: React.ReactNode }) {
+export default function AuthGuard({
+  children,
+  loginPath = "/login",
+  requireAdmin = false,
+}: {
+  children: React.ReactNode;
+  loginPath?: string;
+  /** When set, signed-in non-admins are sent to the regular user login. */
+  requireAdmin?: boolean;
+}) {
   const router = useRouter();
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    if (!getJwt()) {
+    if (!hasValidSession()) {
+      // Drop any stale/expired token so the login page starts clean
+      clearSession();
+      router.replace(loginPath);
+    } else if (requireAdmin && !hasAdminRole()) {
       router.replace("/login");
     } else {
       setVerified(true);
     }
-  }, [router]);
+  }, [router, loginPath, requireAdmin]);
 
   if (!verified) {
     return (
